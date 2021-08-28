@@ -26,6 +26,7 @@ function Invoke-WakeOnLan
     Author: felix.buehl@febit.systems
     Filename: Invoke-WakeOnLan.ps1
 .LINK
+   https://github.com/thejoker8814/PowerShellScripts/blob/main/Invoke-WakeOnLan.ps1
 #>
   [CmdletBinding()]
   param
