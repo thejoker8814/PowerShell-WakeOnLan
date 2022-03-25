@@ -68,10 +68,10 @@ function Invoke-WakeOnLan
 
     # fall back to determine interface by resolving hostname
     if($null -eq $lIpaddr) {
-    $lIpaddr = [System.Net.Dns]::Resolve([System.Net.DNS]::GetHostName()).AddressList[0]
+      $lIpaddr = [System.Net.Dns]::Resolve([System.Net.DNS]::GetHostName()).AddressList[0]
     }
     
-	$lIpEndpoint = new-object System.Net.IPEndPoint($lIpaddr,0)
+	  $lIpEndpoint = new-object System.Net.IPEndPoint($lIpaddr,0)
     Write-Debug ("Using local interface address/ port " + $lIpEndpoint.ToString())
     # instantiate a UDP client
     $UDPclient = [System.Net.Sockets.UdpClient]::new($lIpEndpoint)
