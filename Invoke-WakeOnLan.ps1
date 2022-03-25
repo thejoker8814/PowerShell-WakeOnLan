@@ -85,38 +85,26 @@ function Invoke-WakeOnLan
   }
   process
   {
-    foreach($_ in $MacAddress)
+    foreach ($currentMacAddress in $MacAddress)
     {
       try {
-        $currentMacAddress = $_
-        Write-Debug "MAC-Address $currentMacAddress read."       
+        # $currentMacAddress = $_
+        Write-Debug "MAC-Address $currentMacAddress read"       
         # get byte array from mac address
-        $mac = $currentMacAddress -split '[:-]' |
-          # convert the hex number into byte
-          ForEach-Object {
-            [System.Convert]::ToByte($_, 16)
-          }
-          
-        #region compose the "magic packet"
-        
-        # create a byte array with 102 bytes initialized to 255 each
-        $packet = [byte[]](,0xFF * 102)
-        
-        # leave the first 6 bytes untouched, and
-        # repeat the target mac address bytes in bytes 7 through 102
-        6..101 | Foreach-Object { 
-          # $_ is indexing in the byte array,
-          # $_ % 6 produces repeating indices between 0 and 5
-          # (modulo operator)
-          $packet[$_] = $mac[($_ % 6)]
+        # convert the hex number into byte
+        $macByteArray = $currentMacAddress -split '[:-]' | ForEach-Object {
+          [System.Convert]::ToByte($_, 16)
         }
-        
-        #endregion
+
+        # create a byte array with 102 bytes size 
+        # set the first 6 bytes to 255 / 0xFF
+        # and add the mac address byte array 16 times (WoL) magic packet specification
+        [byte[]] $packet = (,0xFF * 6) + ($macByteArray * 16)
         
         # send the magic packet to the broadcast address
         $result = $UDPclient.Send($packet, $packet.Length, $rIpEndPoint)
-        Write-Debug ("UDPClient sent " + $result.ToString() + " bytes.")
-        Write-Verbose "sent magic packet to $currentMacAddress..."
+        Write-Debug ("UDP client sent " + $result.ToString() + " bytes")
+        Write-Verbose ("Sent magic packet to " + $currentMacAddress)
       }
       catch 
       {
